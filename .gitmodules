@@ -1,0 +1,4 @@
+[submodule "third_party/edgetx"]
+	path = third_party/edgetx
+	url = https://github.com/EdgeTX/edgetx.git
+	shallow = true
