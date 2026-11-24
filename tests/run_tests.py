@@ -185,11 +185,13 @@ def main():
         check_fixtures(radio, tag, exe, expect, args.update, caught)
         check_cli(radio, tag, exe)
 
+    # Every broken fixture must be expected to fail on at least one tag;
+    # check_fixtures() enforces the expectation on each tag that is tested.
     for radio in sorted({r for r, _ in backends}):
         for rel in fixtures(radio):
             sub = os.path.relpath(rel, os.path.join("tests", "fixtures", radio))
-            if sub.startswith("broken") and (radio, sub) not in caught:
-                fail(f"{radio} {sub}: broken fixture not caught by any tested tag")
+            if sub.startswith("broken") and not any(expect.get(sub, {}).values()):
+                fail(f"{radio} {sub}: broken fixture has no expected findings on any tag")
 
     check_dispatcher(args.bin_dir, backends)
 
