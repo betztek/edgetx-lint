@@ -53,6 +53,8 @@ file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" LINT_VERSION LIMIT_COUNT 1)
 add_executable(edgetx-lint src/frontend/main.cpp)
 target_compile_definitions(edgetx-lint PRIVATE LINT_VERSION="${LINT_VERSION}")
 set_target_properties(edgetx-lint PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+# Release binaries should run on any recent glibc system without matching C++ runtime
+target_link_options(edgetx-lint PRIVATE -static-libstdc++ -static-libgcc)
 
 if(LINT_FRONTEND_ONLY)
   return()
@@ -107,6 +109,7 @@ target_compile_options(edgetx-lint-backend PRIVATE ${ETX_IFACE_OPTS} -Wno-unused
 add_dependencies(edgetx-lint-backend radiolib_native simu_drivers)
 find_package(Threads REQUIRED)
 target_link_libraries(edgetx-lint-backend PRIVATE Threads::Threads)
+target_link_options(edgetx-lint-backend PRIVATE -static-libstdc++ -static-libgcc)
 set_target_properties(edgetx-lint-backend PROPERTIES
   OUTPUT_NAME ${BACKEND_NAME}
   RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/libexec/edgetx-lint)

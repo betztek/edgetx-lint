@@ -1,0 +1,2 @@
+tests/fixtures/pocket/broken/literal-weight-from-2.12.yml:23: error [out-of-range] mixData[0].weight: -1024 is out of range for 'weight'; the radio stores 0 (and writes that back)
+1 file(s) checked (pocket, EdgeTX v2.12.5): 1 error(s), 0 warning(s), 0 info

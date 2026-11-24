@@ -1,0 +1,6 @@
+tests/fixtures/tx16s/broken/duplicate-key.yml:15: warning [duplicate-key] extendedLimits: 'extendedLimits' is set again; this value overrides line 14
+tests/fixtures/tx16s/broken/duplicate-key.yml:170: info [normalized] screenData[0].layoutData.options[0].type: the radio rewrites 'Unsigned' as 'None' (same setting, current format)
+tests/fixtures/tx16s/broken/duplicate-key.yml:174: info [normalized] screenData[0].layoutData.options[1].type: the radio rewrites 'Unsigned' as 'None' (same setting, current format)
+tests/fixtures/tx16s/broken/duplicate-key.yml:178: info [normalized] screenData[0].layoutData.options[2].type: the radio rewrites 'Unsigned' as 'None' (same setting, current format)
+tests/fixtures/tx16s/broken/duplicate-key.yml:182: info [normalized] screenData[0].layoutData.options[3].type: the radio rewrites 'Unsigned' as 'None' (same setting, current format)
+1 file(s) checked (tx16s, EdgeTX v2.12.5): 0 error(s), 1 warning(s), 4 info

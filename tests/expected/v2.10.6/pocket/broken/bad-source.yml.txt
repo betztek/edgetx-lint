@@ -1,0 +1,2 @@
+tests/fixtures/pocket/broken/bad-source.yml:41: error [bad-value] mixData[1].srcRaw: 'Q9' is not understood for 'srcRaw'; the radio stores it as 'NONE'
+1 file(s) checked (pocket, EdgeTX v2.10.6): 1 error(s), 0 warning(s), 0 info

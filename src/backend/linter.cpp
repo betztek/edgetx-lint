@@ -205,6 +205,7 @@ struct InputRec {
   bool gatedByUnion = false;
   bool dynamic = false;   // inside a size-0 (non-flat storage) container
   bool flagged = false;   // tier 1 already reported it
+  bool overridden = false;  // a later duplicate of the same key wins
 };
 
 struct ParseSession {
@@ -218,7 +219,7 @@ struct ParseSession {
   int level = 0;
   int line = 0;
   std::vector<InputRec> recs;
-  std::map<ValKey, int> seen;  // dup keys
+  std::map<ValKey, size_t> seen;  // dup keys -> index in recs
 
   Level& L(int i) {
     if ((int)lv.size() <= i) lv.resize(i + 1);
@@ -508,12 +509,13 @@ void w_set_attr(void* ctx, SetBuf buf, uint16_t len)
     const ValKey& k = r.vkey;
     auto it = s->seen.find(k);
     if (it != s->seen.end()) {
+      InputRec& prev = s->recs[it->second];
+      prev.overridden = true;
       s->add(Severity::Warning, "duplicate-key", r.line, r.path,
              "'" + r.key + "' is set again; this value overrides line " +
-                 std::to_string(it->second));
-    } else {
-      s->seen[k] = r.line;
+                 std::to_string(prev.line));
     }
+    s->seen[k] = s->recs.size();
     if (len > 255 && a->type != YDT_STRING) {
       r.flagged = true;
       s->add(Severity::Error, "bad-value", r.line, r.path,
@@ -663,7 +665,8 @@ static std::string legacyGvName(long v, int bits)
   return "";
 }
 
-static void versionTrap(ParseSession& s, const std::string& semver)
+static void versionTrap(ParseSession& s, const std::string& semver,
+                        const std::map<ValKey, std::string>* emitted)
 {
   const int fileVer = semverNum(semver);
   const int libVer = ETX_VERSION_NUM;
@@ -680,12 +683,18 @@ static void versionTrap(ParseSession& s, const std::string& semver)
       std::string gv = legacyGvName(strtol(r.value.c_str(), nullptr, 10), f.bits2_10);
       if (gv.empty()) break;
       r.flagged = true;
+      std::string stored;
+      if (emitted) {
+        auto it = emitted->find(r.vkey);
+        if (it != emitted->end()) stored = it->second;
+      }
       if (libNew) {
         s.add(Severity::Error, "version-trap", r.line, r.path,
               "'" + r.key + ": " + r.value + "' was written by EdgeTX " + semver +
                   ", where it means " + gv + ". EdgeTX " + VERSION +
-                  " reads it as the literal number " + r.value +
-                  " (no conversion: semver is write-only)",
+                  " reads it as a plain number" +
+                  (stored.empty() ? "" : " and stores " + stored + " (out of range for the field)") +
+                  "; no conversion happens (semver is write-only)",
               "replace the number with '" + gv + "', or re-save the model with EdgeTX 2.10 Companion before upgrading");
       } else {
         s.add(Severity::Error, "version-trap", r.line, r.path,
@@ -876,18 +885,21 @@ FileResult lintFile(const std::string& path, const Options& opt)
          "(version-dependent value encodings cannot be checked)");
   }
 
-  versionTrap(s, res.semver);
-
+  bool trapDone = false;
   if (!err && !opt.noRoundtrip) {
     WriteSession ws;
     uint8_t* data = isRadio ? (uint8_t*)&g_eeGeneral : (uint8_t*)&g_model;
     generateText(root, data, &ws);
+
+    versionTrap(s, res.semver, &ws.emitted);
+    trapDone = true;
 
     uint8_t* stored = isRadio ? (uint8_t*)&g_eeGeneral : (uint8_t*)&g_model;
     std::map<std::string, std::vector<const InputRec*>> dropped;  // by group
     std::vector<std::string> droppedOrder;
     for (auto& r : s.recs) {
       const YamlNode* n = r.node;
+      if (r.overridden) continue;
       if (n->type == YDT_CUSTOM && !n->u._cust_attr.write) {
         if (n->u._cust_attr.read)
           addf(Severity::Info, "legacy-key", r.line, r.path,
@@ -900,7 +912,12 @@ FileResult lintFile(const std::string& path, const Options& opt)
       if (it != ws.emitted.end()) {
         if (r.flagged || lower(it->second) == lower(r.value)) continue;
         static const std::set<std::string> nullish = {"", "0", "NONE", "---", "OFF", "\"\""};
-        if (nullish.count(it->second) && !nullish.count(r.value)) {
+        static const std::regex intRe("-?[0-9]+");
+        if (std::regex_match(r.value, intRe) && std::regex_match(it->second, intRe)) {
+          addf(Severity::Error, "out-of-range", r.line, r.path,
+               r.value + " is out of range for '" + r.key + "'; the radio stores " +
+                   it->second + " (and writes that back)");
+        } else if (nullish.count(it->second) && !nullish.count(r.value)) {
           addf(Severity::Warning, "value-lost", r.line, r.path,
                "the radio reads '" + printable(r.value) + "' as '" + printable(it->second) +
                    "': the value is not understood and is lost on save");
@@ -950,6 +967,8 @@ FileResult lintFile(const std::string& path, const Options& opt)
              what + " not written back by the radio; lost on save");
     }
   }
+
+  if (!trapDone) versionTrap(s, res.semver, nullptr);
 
   // stable order: by line, then rule
   std::stable_sort(res.findings.begin(), res.findings.end(),

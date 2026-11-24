@@ -1,0 +1,6 @@
+tests/fixtures/tx16s/broken/literal-weight-from-2.12.yml:25: error [out-of-range] mixData[0].weight: -1024 is out of range for 'weight'; the radio stores 0 (and writes that back)
+tests/fixtures/tx16s/broken/literal-weight-from-2.12.yml:169: info [normalized] screenData[0].layoutData.options[0].type: the radio rewrites 'Unsigned' as 'None' (same setting, current format)
+tests/fixtures/tx16s/broken/literal-weight-from-2.12.yml:173: info [normalized] screenData[0].layoutData.options[1].type: the radio rewrites 'Unsigned' as 'None' (same setting, current format)
+tests/fixtures/tx16s/broken/literal-weight-from-2.12.yml:177: info [normalized] screenData[0].layoutData.options[2].type: the radio rewrites 'Unsigned' as 'None' (same setting, current format)
+tests/fixtures/tx16s/broken/literal-weight-from-2.12.yml:181: info [normalized] screenData[0].layoutData.options[3].type: the radio rewrites 'Unsigned' as 'None' (same setting, current format)
+1 file(s) checked (tx16s, EdgeTX v2.12.5): 1 error(s), 0 warning(s), 4 info

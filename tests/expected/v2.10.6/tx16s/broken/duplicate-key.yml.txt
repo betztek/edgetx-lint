@@ -1,0 +1,2 @@
+tests/fixtures/tx16s/broken/duplicate-key.yml:15: warning [duplicate-key] extendedLimits: 'extendedLimits' is set again; this value overrides line 14
+1 file(s) checked (tx16s, EdgeTX v2.10.6): 0 error(s), 1 warning(s), 0 info

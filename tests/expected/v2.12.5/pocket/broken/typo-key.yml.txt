@@ -1,0 +1,3 @@
+tests/fixtures/pocket/broken/typo-key.yml:39: error [unknown-key] mixData[1].wieght: unknown key 'wieght': the radio silently ignores it
+    hint: did you mean 'weight'?
+1 file(s) checked (pocket, EdgeTX v2.12.5): 1 error(s), 0 warning(s), 0 info
