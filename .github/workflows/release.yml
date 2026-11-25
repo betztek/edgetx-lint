@@ -1,7 +1,12 @@
 name: Release
 
-# Push a tag like v0.1.0 to build all backends and publish a GitHub Release
-# with a linux-x64 tarball (dispatcher + every radio/EdgeTX backend).
+# Two ways to release:
+#  - push a tag like v0.1.0, or
+#  - run this workflow manually on a branch (usually main) with input tag:
+#    the release and its tag are created at that branch's commit.
+# Builds every radio x EdgeTX backend, tests them, publishes
+# edgetx-lint-linux-x64.tar.gz (+ .sha256), then smoke-tests the published
+# GitHub Action against the fixtures.
 
 on:
   push:
@@ -9,22 +14,25 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Existing tag to (re)build and publish
+        description: Release tag to create or update, e.g. v0.1.0 (must match VERSION)
         required: true
 
 permissions:
   contents: write
+
+env:
+  TAG: ${{ inputs.tag || github.ref_name }}
 
 jobs:
   build:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        edgetx: [v2.10.6, v2.12.5]
+        edgetx: [v2.10.6, v2.10.7, v2.11.8, v2.12.5]
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.tag || github.ref }}
+      - name: Tag matches VERSION
+        run: test "v$(cat VERSION)" = "$TAG"
       - run: |
           git submodule update --init --depth 1 third_party/edgetx
           scripts/checkout-edgetx.sh ${{ matrix.edgetx }}
@@ -43,8 +51,6 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.tag || github.ref }}
       - uses: actions/download-artifact@v4
         with:
           pattern: dist-*
@@ -60,11 +66,38 @@ jobs:
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ inputs.tag || github.ref_name }}
         run: |
+          files="edgetx-lint-linux-x64.tar.gz edgetx-lint-linux-x64.tar.gz.sha256"
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" edgetx-lint-linux-x64.tar.gz edgetx-lint-linux-x64.tar.gz.sha256 --clobber
+            gh release upload "$TAG" $files --clobber
           else
-            gh release create "$TAG" edgetx-lint-linux-x64.tar.gz edgetx-lint-linux-x64.tar.gz.sha256 \
+            # creates the tag at this commit when it does not exist yet
+            gh release create "$TAG" $files --target "$GITHUB_SHA" \
               --title "edgetx-lint $TAG" --generate-notes
           fi
+
+  # Releases made with GITHUB_TOKEN do not trigger other workflows, so the
+  # published Action is tested here, against the asset just uploaded.
+  action-smoke-test:
+    needs: publish
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {radio: tx16s, edgetx: v2.12.5, files: "tests/fixtures/tx16s/valid/*.yml tests/fixtures/tx16s/valid/RADIO/radio.yml", want: "0"}
+          - {radio: tx16s, edgetx: v2.12.5, files: "tests/fixtures/tx16s/broken/typo-key.yml", want: "1"}
+          - {radio: pocket, edgetx: v2.10.6, files: "tests/fixtures/pocket/valid/**/*.yml", want: "0"}
+          - {radio: pocket, edgetx: v2.10.6, files: "tests/fixtures/pocket/broken/lowercase-hex-escape.yml", want: "1"}
+    steps:
+      - uses: actions/checkout@v4
+      - id: lint
+        uses: ./
+        continue-on-error: true
+        with:
+          radio: ${{ matrix.radio }}
+          edgetx: ${{ matrix.edgetx }}
+          files: ${{ matrix.files }}
+          version: ${{ env.TAG }}
+      - name: Exit code is ${{ matrix.want }}
+        run: test "${{ steps.lint.outputs.exit-code }}" = "${{ matrix.want }}"

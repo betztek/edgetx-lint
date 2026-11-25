@@ -1,0 +1,2 @@
+tests/fixtures/pocket/broken/bad-number.yml:12: error [bad-value] extendedLimits: 'yes' is not a valid unsigned integer for 'extendedLimits'; the radio reads it as 0
+1 file(s) checked (pocket, EdgeTX v2.10.7): 1 error(s), 0 warning(s), 0 info

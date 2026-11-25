@@ -1,0 +1,2 @@
+tests/fixtures/pocket/broken/duplicate-key.yml:13: warning [duplicate-key] extendedLimits: 'extendedLimits' is set again; this value overrides line 12
+1 file(s) checked (pocket, EdgeTX v2.11.8): 0 error(s), 1 warning(s), 0 info

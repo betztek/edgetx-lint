@@ -1,0 +1,3 @@
+tests/fixtures/tx16s/broken/wrong-nesting.yml:4: error [wrong-nesting] header.name.bitmap: 'bitmap' is nested under 'header.name', which is a plain value; the radio ignores it
+    hint: check the indentation
+1 file(s) checked (tx16s, EdgeTX v2.11.8): 1 error(s), 0 warning(s), 0 info

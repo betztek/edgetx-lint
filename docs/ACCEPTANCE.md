@@ -34,6 +34,9 @@ and v2.12.5, `--format json`, all `MODELS/*.yml` plus `RADIO/radio.yml`.
   radio **stores 0** (mix silently disabled), not −1024 %. Verified with
   EdgeTX's own writer (`roundtrip` prints `weight: 0`).
 - `model7.yml` parses fully on 2.12.5 (the lowercase escape is accepted).
+  Not on 2.11.x: EdgeTX 2.11.8 still rejects lowercase hex escapes (fixture
+  `lowercase-hex-escape.yml` confirms), so the abort applies to 2.10.x and
+  2.11.x alike.
 - info: `legacy-key` ×13, `normalized` ×28 (e.g. 2.9 pot/slider names
   `S1`/`LS` → `P1`/`SL1`, custom-function parameter format), `not-linted` ×1.
 
