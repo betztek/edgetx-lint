@@ -1,0 +1,9 @@
+tests/fixtures/tx16s/broken/legacy-gvar-weight.yml:25: error [version-trap] mixData[0].weight: 'weight: -1024' was written by EdgeTX 2.9.2, where it means GV1. EdgeTX 2.12.5 reads it as a plain number and stores 0 (out of range for the field); no conversion happens (semver is write-only)
+    hint: replace the number with 'GV1', or re-save the model with EdgeTX 2.10 Companion before upgrading
+tests/fixtures/tx16s/broken/legacy-gvar-weight.yml:41: error [version-trap] mixData[1].weight: 'weight: 1023' was written by EdgeTX 2.9.2, where it means -GV1. EdgeTX 2.12.5 reads it as a plain number and stores -1 (out of range for the field); no conversion happens (semver is write-only)
+    hint: replace the number with '-GV1', or re-save the model with EdgeTX 2.10 Companion before upgrading
+tests/fixtures/tx16s/broken/legacy-gvar-weight.yml:169: info [normalized] screenData[0].layoutData.options[0].type: the radio rewrites 'Unsigned' as 'None' (same setting, current format)
+tests/fixtures/tx16s/broken/legacy-gvar-weight.yml:173: info [normalized] screenData[0].layoutData.options[1].type: the radio rewrites 'Unsigned' as 'None' (same setting, current format)
+tests/fixtures/tx16s/broken/legacy-gvar-weight.yml:177: info [normalized] screenData[0].layoutData.options[2].type: the radio rewrites 'Unsigned' as 'None' (same setting, current format)
+tests/fixtures/tx16s/broken/legacy-gvar-weight.yml:181: info [normalized] screenData[0].layoutData.options[3].type: the radio rewrites 'Unsigned' as 'None' (same setting, current format)
+1 file(s) checked (tx16s, EdgeTX v2.12.5): 2 error(s), 0 warning(s), 4 info

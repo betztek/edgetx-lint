@@ -1,0 +1,70 @@
+name: Release
+
+# Push a tag like v0.1.0 to build all backends and publish a GitHub Release
+# with a linux-x64 tarball (dispatcher + every radio/EdgeTX backend).
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to (re)build and publish
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        edgetx: [v2.10.6, v2.12.5]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+      - run: |
+          git submodule update --init --depth 1 third_party/edgetx
+          scripts/checkout-edgetx.sh ${{ matrix.edgetx }}
+      - run: scripts/setup-deps.sh
+      - run: |
+          scripts/build.sh tx16s
+          scripts/build.sh pocket
+          python3 tests/run_tests.py --bin-dir dist/bin
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ matrix.edgetx }}
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: dist-*
+          merge-multiple: true
+          path: pkg/
+      - name: Package
+        run: |
+          chmod +x pkg/bin/* pkg/libexec/edgetx-lint/*
+          cp README.md LICENSE pkg/
+          tar -C pkg -czf edgetx-lint-linux-x64.tar.gz .
+          sha256sum edgetx-lint-linux-x64.tar.gz > edgetx-lint-linux-x64.tar.gz.sha256
+          tar -tzf edgetx-lint-linux-x64.tar.gz
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag || github.ref_name }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" edgetx-lint-linux-x64.tar.gz edgetx-lint-linux-x64.tar.gz.sha256 --clobber
+          else
+            gh release create "$TAG" edgetx-lint-linux-x64.tar.gz edgetx-lint-linux-x64.tar.gz.sha256 \
+              --title "edgetx-lint $TAG" --generate-notes
+          fi

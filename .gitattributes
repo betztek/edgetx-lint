@@ -1,0 +1,3 @@
+# Fixtures and goldens are byte-exact EdgeTX files: no EOL or text conversion.
+tests/fixtures/** -text
+tests/expected/** -text

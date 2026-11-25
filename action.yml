@@ -1,0 +1,90 @@
+name: edgetx-lint
+description: Validate EdgeTX model/radio YAML with EdgeTX's own parser and flag settings the radio would silently ignore or misread.
+author: betztek
+branding:
+  icon: radio
+  color: blue
+
+inputs:
+  radio:
+    description: Radio the files are for (tx16s | pocket)
+    required: true
+  edgetx:
+    description: EdgeTX release to lint against, e.g. v2.12.5 (default: newest bundled)
+    required: false
+    default: ""
+  files:
+    description: Whitespace-separated files or globs (bash globstar), e.g. "MODELS/*.yml RADIO/radio.yml"
+    required: true
+  args:
+    description: Extra edgetx-lint arguments, e.g. "--warn-unknown --strict"
+    required: false
+    default: ""
+  version:
+    description: edgetx-lint release to download (tag like v0.1.0, or "latest"). Default - the action's own ref if it is a release tag, else latest.
+    required: false
+    default: ""
+  token:
+    description: Token used to download the release asset
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  exit-code:
+    description: 0 clean, 1 findings, 2 usage/internal error
+    value: ${{ steps.lint.outputs.exit-code }}
+
+runs:
+  using: composite
+  steps:
+    - name: Download edgetx-lint
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        WANT: ${{ inputs.version }}
+        ACTION_REF: ${{ github.action_ref }}
+        ACTION_REPO: ${{ github.action_repository }}
+      run: |
+        set -euo pipefail
+        repo="${ACTION_REPO:-betztek/edgetx-lint}"
+        ver="$WANT"
+        if [ -z "$ver" ]; then
+          if [[ "${ACTION_REF:-}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then ver="$ACTION_REF"; else ver=latest; fi
+        fi
+        dest="$RUNNER_TEMP/edgetx-lint"
+        mkdir -p "$dest"
+        if [ "$ver" = latest ]; then
+          gh release download --repo "$repo" --pattern 'edgetx-lint-linux-x64.tar.gz*' --dir "$RUNNER_TEMP" --clobber
+        else
+          gh release download "$ver" --repo "$repo" --pattern 'edgetx-lint-linux-x64.tar.gz*' --dir "$RUNNER_TEMP" --clobber
+        fi
+        (cd "$RUNNER_TEMP" && sha256sum -c edgetx-lint-linux-x64.tar.gz.sha256)
+        tar -C "$dest" -xzf "$RUNNER_TEMP/edgetx-lint-linux-x64.tar.gz"
+        echo "$dest/bin" >> "$GITHUB_PATH"
+        "$dest/bin/edgetx-lint" list
+
+    - name: Lint
+      id: lint
+      shell: bash
+      env:
+        RADIO: ${{ inputs.radio }}
+        EDGETX: ${{ inputs.edgetx }}
+        FILES: ${{ inputs.files }}
+        ARGS: ${{ inputs.args }}
+      run: |
+        set -uo pipefail
+        shopt -s globstar nullglob
+        files=()
+        for pat in $FILES; do
+          matched=( $pat )
+          if [ ${#matched[@]} -eq 0 ]; then echo "::warning::no files match '$pat'"; fi
+          files+=( "${matched[@]}" )
+        done
+        if [ ${#files[@]} -eq 0 ]; then echo "::error::no input files"; echo "exit-code=2" >> "$GITHUB_OUTPUT"; exit 2; fi
+        extra=()
+        [ -n "$EDGETX" ] && extra+=(--edgetx "$EDGETX")
+        # shellcheck disable=SC2086
+        edgetx-lint check --radio "$RADIO" "${extra[@]}" --format github $ARGS -- "${files[@]}"
+        rc=$?
+        echo "exit-code=$rc" >> "$GITHUB_OUTPUT"
+        exit $rc

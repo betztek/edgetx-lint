@@ -1,0 +1,2 @@
+tests/fixtures/pocket/valid/model-tuned.yml:55: info [normalized] mixData[2].weight: the radio rewrites 'GV2' as 'gv(1)' (same setting, current format)
+1 file(s) checked (pocket, EdgeTX v2.12.5): 0 error(s), 0 warning(s), 1 info

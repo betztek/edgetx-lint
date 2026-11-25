@@ -1,0 +1,2 @@
+tests/fixtures/tx16s/broken/out-of-range.yml:14: error [out-of-range] extendedLimits: 3 does not fit 'extendedLimits' (1-bit field, 0..1); the radio truncates it
+1 file(s) checked (tx16s, EdgeTX v2.10.6): 1 error(s), 0 warning(s), 0 info

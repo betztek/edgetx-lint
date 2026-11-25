@@ -1,0 +1,7 @@
+tests/fixtures/tx16s/broken/misplaced-key.yml:10: error [unknown-key] destCh: unknown key 'destCh': the radio silently ignores it
+    hint: 'destCh' is valid at 'mixData[].destCh' (wrong nesting?)
+tests/fixtures/tx16s/broken/misplaced-key.yml:170: info [normalized] screenData[0].layoutData.options[0].type: the radio rewrites 'Unsigned' as 'None' (same setting, current format)
+tests/fixtures/tx16s/broken/misplaced-key.yml:174: info [normalized] screenData[0].layoutData.options[1].type: the radio rewrites 'Unsigned' as 'None' (same setting, current format)
+tests/fixtures/tx16s/broken/misplaced-key.yml:178: info [normalized] screenData[0].layoutData.options[2].type: the radio rewrites 'Unsigned' as 'None' (same setting, current format)
+tests/fixtures/tx16s/broken/misplaced-key.yml:182: info [normalized] screenData[0].layoutData.options[3].type: the radio rewrites 'Unsigned' as 'None' (same setting, current format)
+1 file(s) checked (tx16s, EdgeTX v2.12.5): 1 error(s), 0 warning(s), 4 info

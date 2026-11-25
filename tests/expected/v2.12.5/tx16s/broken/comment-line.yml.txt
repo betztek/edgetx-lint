@@ -1,0 +1,7 @@
+tests/fixtures/tx16s/broken/comment-line.yml:9: error [unknown-key] # trims shown on main view: unknown key '# trims shown on main view': the radio silently ignores it
+    hint: EdgeTX's parser has no comment support; '#' lines are read as keys
+tests/fixtures/tx16s/broken/comment-line.yml:170: info [normalized] screenData[0].layoutData.options[0].type: the radio rewrites 'Unsigned' as 'None' (same setting, current format)
+tests/fixtures/tx16s/broken/comment-line.yml:174: info [normalized] screenData[0].layoutData.options[1].type: the radio rewrites 'Unsigned' as 'None' (same setting, current format)
+tests/fixtures/tx16s/broken/comment-line.yml:178: info [normalized] screenData[0].layoutData.options[2].type: the radio rewrites 'Unsigned' as 'None' (same setting, current format)
+tests/fixtures/tx16s/broken/comment-line.yml:182: info [normalized] screenData[0].layoutData.options[3].type: the radio rewrites 'Unsigned' as 'None' (same setting, current format)
+1 file(s) checked (tx16s, EdgeTX v2.12.5): 1 error(s), 0 warning(s), 4 info

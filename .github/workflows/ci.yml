@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: build + test (EdgeTX ${{ matrix.edgetx }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        edgetx: [v2.10.6, v2.12.5]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check out EdgeTX ${{ matrix.edgetx }} in the submodule
+        run: |
+          git submodule update --init --depth 1 third_party/edgetx
+          scripts/checkout-edgetx.sh ${{ matrix.edgetx }}
+
+      - name: Install build dependencies
+        run: scripts/setup-deps.sh
+
+      - name: Build backends
+        run: |
+          scripts/build.sh tx16s
+          scripts/build.sh pocket
+          dist/bin/edgetx-lint list
+
+      - name: Test
+        run: python3 tests/run_tests.py --bin-dir dist/bin
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: edgetx-lint-${{ matrix.edgetx }}-linux-x64
+          path: dist/
+          retention-days: 7
+
+  # Single stable check name for branch protection / rulesets.
+  ci-ok:
+    name: ci-ok
+    if: always()
+    needs: [test]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: test "${{ needs.test.result }}" = success
