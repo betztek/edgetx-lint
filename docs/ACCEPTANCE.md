@@ -54,3 +54,18 @@ and v2.12.5, `--format json`, all `MODELS/*.yml` plus `RADIO/radio.yml`.
 - `postModelLoad()` fix-ups the radio applies after loading (they touch
   hardware/runtime state) are not simulated.
 - Companion's codec (tier 1b) is not compared yet; see README.
+
+## Update 2026-11-26: rc-config `main` after pruning (`ea98a86`)
+
+TX16S: 4 models + labels.yml + radio.yml. Pocket: 1 model + radio.yml.
+
+| Radio | EdgeTX | errors | warnings |
+|---|---|---|---|
+| tx16s | v2.10.6 | 0 | 0 |
+| tx16s | v2.12.5 | 0 | 0 |
+| pocket | v2.10.0 | 0 | 0 |
+| pocket | v2.12.5 | 0 | 0 |
+
+The models with findings above (model7, model8, model9) were deleted.
+`v2.10.0` is the Pocket's actual firmware; it behaves the same as v2.10.6 on
+every fixture.

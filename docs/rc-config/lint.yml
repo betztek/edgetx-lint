@@ -1,0 +1,63 @@
+# Drop-in replacement for betztek/rc-config .github/workflows/lint.yml
+# (rc-config is private and Claude sessions attach it read-only, so this file
+# lives here; the owner, or a session with push access, copies it over in a PR).
+#
+# - Blocking jobs lint each radio against the EdgeTX version it RUNS TODAY.
+#   Keep these in step with SDCARD.md: after a firmware upgrade, change the
+#   `edgetx` value in the same PR that commits the upgraded files.
+# - Non-blocking "upgrade preview" jobs lint the same files against the next
+#   EdgeTX release, so version traps show up as annotations before upgrading.
+# - `docs` fails if docs/ is stale (CLAUDE.md: rerun build_docs.py on model or
+#   notes changes and commit the result).
+#
+# Verified 2026-11-26 against rc-config main (ea98a86), using edgetx-lint v0.1.0
+# binaries: every blocking and preview combination gives 0 errors and
+# 0 warnings, and build_docs.py reproduces docs/ with no diff.
+
+name: lint
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  edgetx:
+    name: ${{ matrix.radio }} on EdgeTX ${{ matrix.edgetx }}${{ matrix.preview && ' (upgrade preview)' || '' }}
+    runs-on: ubuntu-24.04
+    continue-on-error: ${{ matrix.preview }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {radio: tx16s,  edgetx: v2.10.6, preview: false}
+          - {radio: pocket, edgetx: v2.10.0, preview: false}
+          - {radio: tx16s,  edgetx: v2.12.5, preview: true}
+          - {radio: pocket, edgetx: v2.12.5, preview: true}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: betztek/edgetx-lint@v0.1.1
+        with:
+          radio: ${{ matrix.radio }}
+          edgetx: ${{ matrix.edgetx }}
+          files: ${{ matrix.radio }}/MODELS/*.yml ${{ matrix.radio }}/RADIO/radio.yml
+          args: --quiet
+
+  docs:
+    name: docs up to date
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python3 -m pip install --quiet pyyaml
+      - name: Regenerate docs
+        run: |
+          python3 scripts/build_docs.py tx16s
+          python3 scripts/build_docs.py pocket
+      - name: docs/ must match
+        run: git diff --exit-code -- docs/

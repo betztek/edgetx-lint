@@ -1,5 +1,8 @@
 # edgetx-lint — notes for Claude
 
+**Start here:** `docs/HANDOFF.md` has the current state, the next steps, the
+rc-config CI plan and cloud-session gotchas.
+
 CLI + GitHub Action that validates EdgeTX model/radio YAML **with EdgeTX's own
 parser, loader and writer**, and reports settings the radio would silently
 ignore or misread.
@@ -96,7 +99,8 @@ edgetx-lint list
 
 ## Out of scope (later)
 
-`describe` subcommand (port betztek/rc-config scripts/describe.py), mixer
+`describe` subcommand (planned, see `docs/HANDOFF.md` "describe: why and
+design"; not a straight port of rc-config's describe.py), mixer
 behaviour tests (EdgeTX PR #7220 scenarios), simulator screenshots (upstream
 PR #7668), macOS/Windows builds, Companion codec cross-check (tier 1b, see
 README).

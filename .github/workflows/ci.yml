@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        edgetx: [v2.10.6, v2.10.7, v2.11.8, v2.12.5]
+        edgetx: [v2.10.0, v2.10.6, v2.10.7, v2.11.8, v2.12.5]
     steps:
       - uses: actions/checkout@v4
 
@@ -47,11 +47,35 @@ jobs:
           path: dist/
           retention-days: 7
 
+  # Loads ./action.yml (manifest + composite steps) against the latest
+  # published release, so a broken action manifest fails the PR.
+  action:
+    name: action (${{ matrix.case }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {case: valid, files: "tests/fixtures/tx16s/valid/*.yml tests/fixtures/tx16s/valid/RADIO/radio.yml", want: "0"}
+          - {case: broken, files: "tests/fixtures/tx16s/broken/typo-key.yml", want: "1"}
+    steps:
+      - uses: actions/checkout@v4
+      - id: lint
+        uses: ./
+        continue-on-error: true
+        with:
+          radio: tx16s
+          edgetx: v2.12.5
+          files: ${{ matrix.files }}
+          version: latest
+      - name: Exit code is ${{ matrix.want }}
+        run: test "${{ steps.lint.outputs.exit-code }}" = "${{ matrix.want }}"
+
   # Single stable check name for branch protection / rulesets.
   ci-ok:
     name: ci-ok
     if: always()
-    needs: [test]
+    needs: [test, action]
     runs-on: ubuntu-24.04
     steps:
-      - run: test "${{ needs.test.result }}" = success
+      - run: test "${{ needs.test.result }}" = success && test "${{ needs.action.result }}" = success
