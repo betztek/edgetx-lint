@@ -33,6 +33,91 @@ Read this and `CLAUDE.md` before starting work in a new session. Last updated
 4. **Optional:** delete the stale tag `v0.1.0` and its release, or leave them.
    Its Action never worked; the tarball is fine. Owner only: sessions can't
    push or delete tags.
+5. **`describe` subcommand.** See "describe: why and design" below. Start
+   after step 3, so rc-config lint is already guarding model edits.
+
+## describe: why and design
+
+rc-config builds its per-aircraft docs from `scripts/describe.py`, which calls
+itself interim "until `edgetx-lint describe`". This is not a language port.
+The point is to move the documentation's source of truth from what the file
+says to what the radio loads. A faithful port would keep the bugs below.
+
+### Why (findings from building edgetx-lint, checked 2026-11-26 against rc-config `ea98a86`)
+
+1. **It documents the text, not what the radio loads.** describe.py reads
+   every line with `yaml.BaseLoader`. The radio drops unknown keys and stops
+   at a parse abort. Docs built from the old TX16S model7 would have listed
+   settings after the line where EdgeTX 2.10.6 stopped reading.
+2. **Its GVar weight decoding is wrong in three places:**
+   - **Expo weights:** it applies the 11-bit mix range (GV1 = −1024) to
+     input/expo weights. In 2.10 these are 8-bit (`GV1_SMALL`, GV1 = −128),
+     so expo GVars show as plain numbers.
+   - **Mix offsets:** they use the same legacy encoding (13-bit field, large
+     range) but are passed through undecoded.
+   - **GV10:** it accepts −1015 / 1015 as GV10. Only GV1–GV9 exist.
+3. **Its 2.12 assumption is wrong.** It assumes 2.12 reads legacy numbers as
+   literal weights. Mix weight in 2.12 is a 10-bit `SourceNumVal`, so −1024 is
+   stored as 0. Only EdgeTX's loader gets that right. The `semver` argument
+   it takes is never used.
+4. **Hand-copied hardware tables drift.** Pot labels and the Pocket's
+   physical switch types are copied from EdgeTX sources per board. The
+   backends have them compiled in, per board and per EdgeTX version.
+5. **Its decoding rules only cover EdgeTX 2.9/2.10 on the TX16S.** After the
+   2.12 upgrade rewrites the files (e.g. pots `S1` → `P1`), describe.py needs
+   new rules. edgetx-lint only needs another backend.
+
+### Design
+
+- **Split.** `edgetx-lint describe --radio R --edgetx T FILE...` emits facts
+  JSON only, with a `"schema": 1` field. rc-config's `build_docs.py` keeps the
+  Markdown rendering and the `planes/*.notes.yml` prose. The radio's view and
+  the documentation layer stay separate.
+- **Source.** Facts come from the tier-2 state: the model after EdgeTX's
+  `readModelYaml()`, i.e. exactly what the radio holds. Display names
+  (sources, switch positions, curves, GVars) should come from EdgeTX's own
+  helpers so they match the radio UI: `getSourceString`,
+  `getSwitchPositionName`, `getCurveString` and `getGVarString` in
+  `strhelpers.h` (present in 2.10.6 and 2.12.5; not yet tried from the
+  backend).
+- **Lint gate.** describe runs the linter first. If a file has errors, it
+  either refuses (exit 1) or marks the affected values `"loaded": false`.
+  Pick one when implementing and document it. Never silently document values
+  the radio ignores.
+- **Legacy numbers are shown as the radio stores them, not guessed.** On a 2.12
+  backend a legacy −1024 shows as 0 and carries the `version-trap` finding.
+- **Multi-protocol names.** describe.py resolves `subType "P,S"` through the
+  SD card's `Multi.txt`. Keep that file as an optional input (`--multi FILE`),
+  because the protocol list lives on the SD card, not in EdgeTX.
+
+### Acceptance
+
+1. **Parity:** for every model on rc-config `main` and both `baseline-*`
+   branches, compare `describe.py --json` with `edgetx-lint describe` field
+   by field, locally only (rc-config stays read-only, nothing copied). Every
+   difference must be explained, and is expected to be one of findings 1–5
+   above. Record counts and categories in `docs/ACCEPTANCE.md`; no values.
+2. **Synthetic fixtures** for the decoding edge cases: expo GVar weight
+   (8-bit), mix offset GVar, legacy number on 2.12, unknown key, parse abort.
+3. **rc-config switch-over** (separate rc-config PR, owner approval needed):
+   - `build_docs.py` calls `edgetx-lint describe` (via `scripts/install.sh`
+     in CI) instead of describe.py.
+   - The docs diff shows only the expected corrections.
+   - rc-config `CLAUDE.md` "Numbers and switch names come only from the YAML
+     (via describe.py)" becomes "only from `edgetx-lint describe` (what the
+     radio loads)".
+   - describe.py is deleted after one release cycle.
+
+### Tradeoffs and effort
+
+- **Cost:** describe.py is ~420 lines of easy-to-edit Python. The port ties
+  rc-config docs to an edgetx-lint release and to the pinned EdgeTX version.
+  Accepted, because a wrong number in the docs of a real aircraft costs more
+  than release coupling.
+- **Effort:** about 1 day.
+  - JSON schema plus C++ extraction using EdgeTX helpers: half a day.
+  - Parity check and fixtures: a quarter day.
+  - rc-config switch-over PR: a quarter day.
 
 ## rc-config CI design (`docs/rc-config/lint.yml`)
 
@@ -106,7 +191,7 @@ are gone because those models were deleted.
 - Version-trap ranges assume 9 GVars (true for TX16S; Pocket not verified).
 - Tier 1b Companion cross-check: deferred (needs Qt6 and Rust `rs_dfu`; see the
   README).
-- Out of scope: `describe` port, mixer behaviour tests (EdgeTX PR #7220),
+- Out of scope: mixer behaviour tests (EdgeTX PR #7220),
   simulator screenshots (PR #7668), macOS/Windows builds.
 - `actions/checkout@v4` runs on Node 20 and gets a deprecation warning.
   Dependabot (github-actions, weekly) should open the bump.

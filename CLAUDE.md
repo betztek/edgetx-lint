@@ -99,7 +99,8 @@ edgetx-lint list
 
 ## Out of scope (later)
 
-`describe` subcommand (port betztek/rc-config scripts/describe.py), mixer
+`describe` subcommand (planned, see `docs/HANDOFF.md` "describe: why and
+design"; not a straight port of rc-config's describe.py), mixer
 behaviour tests (EdgeTX PR #7220 scenarios), simulator screenshots (upstream
 PR #7668), macOS/Windows builds, Companion codec cross-check (tier 1b, see
 README).
