@@ -84,7 +84,8 @@ runs:
         extra=()
         [ -n "$EDGETX" ] && extra+=(--edgetx "$EDGETX")
         # shellcheck disable=SC2086
-        edgetx-lint check --radio "$RADIO" "${extra[@]}" --format github $ARGS -- "${files[@]}"
-        rc=$?
+        # GitHub runs bash with -e: capture the exit code instead of aborting
+        rc=0
+        edgetx-lint check --radio "$RADIO" "${extra[@]}" --format github $ARGS -- "${files[@]}" || rc=$?
         echo "exit-code=$rc" >> "$GITHUB_OUTPUT"
         exit $rc
