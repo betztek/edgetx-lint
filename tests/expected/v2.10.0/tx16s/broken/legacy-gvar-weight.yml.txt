@@ -1,0 +1,3 @@
+tests/fixtures/tx16s/broken/legacy-gvar-weight.yml:25: info [normalized] mixData[0].weight: the radio rewrites '-1024' as 'GV1' (same setting, current format)
+tests/fixtures/tx16s/broken/legacy-gvar-weight.yml:41: info [normalized] mixData[1].weight: the radio rewrites '1023' as '-GV1' (same setting, current format)
+1 file(s) checked (tx16s, EdgeTX v2.10.0): 0 error(s), 0 warning(s), 2 info

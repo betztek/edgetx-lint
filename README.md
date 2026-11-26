@@ -88,7 +88,7 @@ MODELS/typo.yml:41: error [unknown-key] mixData[1].wieght: unknown key 'wieght':
   `simu_drivers`, the same objects `gtests-radio` links). No patches to EdgeTX.
 
 Supported: `tx16s` (`PCB=X10 PCBREV=TX16S`), `pocket` (`PCB=X7
-PCBREV=POCKET`); EdgeTX v2.10.6, v2.10.7, v2.11.8 and v2.12.5 are built and
+PCBREV=POCKET`); EdgeTX v2.10.0, v2.10.6, v2.10.7, v2.11.8 and v2.12.5 are built and
 tested in CI and shipped in the release. Other tags usually build unchanged
 (`scripts/build.sh RADIO /path/to/edgetx`).
 

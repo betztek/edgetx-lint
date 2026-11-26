@@ -1,0 +1,3 @@
+tests/fixtures/pocket/broken/bad-enum.yml:60: error [bad-value] mixData[2].mltpx: 'ADDD' is not a valid value for 'mltpx'; the radio stores the default instead
+    hint: did you mean 'ADD'?
+1 file(s) checked (pocket, EdgeTX v2.10.0): 1 error(s), 0 warning(s), 0 info

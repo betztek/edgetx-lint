@@ -1,5 +1,8 @@
 # edgetx-lint — notes for Claude
 
+**Start here:** `docs/HANDOFF.md` has the current state, the next steps, the
+rc-config CI plan and cloud-session gotchas.
+
 CLI + GitHub Action that validates EdgeTX model/radio YAML **with EdgeTX's own
 parser, loader and writer**, and reports settings the radio would silently
 ignore or misread.
