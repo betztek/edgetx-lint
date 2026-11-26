@@ -1,5 +1,5 @@
 name: edgetx-lint
-description: Validate EdgeTX model/radio YAML with EdgeTX's own parser and flag settings the radio would silently ignore or misread.
+description: "Validate EdgeTX model/radio YAML with EdgeTX's own parser and flag settings the radio would silently ignore or misread."
 author: betztek
 branding:
   icon: radio
@@ -7,31 +7,31 @@ branding:
 
 inputs:
   radio:
-    description: Radio the files are for (tx16s | pocket)
+    description: "Radio the files are for (tx16s | pocket)"
     required: true
   edgetx:
-    description: EdgeTX release to lint against, e.g. v2.12.5 (default: newest bundled)
+    description: "EdgeTX release to lint against, e.g. v2.12.5 (default: newest bundled)"
     required: false
     default: ""
   files:
-    description: Whitespace-separated files or globs (bash globstar), e.g. "MODELS/*.yml RADIO/radio.yml"
+    description: "Whitespace-separated files or globs (bash globstar), e.g. \"MODELS/*.yml RADIO/radio.yml\""
     required: true
   args:
-    description: Extra edgetx-lint arguments, e.g. "--warn-unknown --strict"
+    description: "Extra edgetx-lint arguments, e.g. \"--warn-unknown --strict\""
     required: false
     default: ""
   version:
-    description: edgetx-lint release to download (tag like v0.1.0, or "latest"). Default - the action's own ref if it is a release tag, else latest.
+    description: "edgetx-lint release to download (tag like v0.1.0, or \"latest\"). Default - the action's own ref if it is a release tag, else latest."
     required: false
     default: ""
   token:
-    description: Token used to download the release asset
+    description: "Token used to download the release asset"
     required: false
     default: ${{ github.token }}
 
 outputs:
   exit-code:
-    description: 0 clean, 1 findings, 2 usage/internal error
+    description: "0 clean, 1 findings, 2 usage/internal error"
     value: ${{ steps.lint.outputs.exit-code }}
 
 runs:

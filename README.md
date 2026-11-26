@@ -108,7 +108,7 @@ From source (Ubuntu 24.04): see [CLAUDE.md](CLAUDE.md#build--test).
 ## GitHub Action
 
 ```yaml
-- uses: betztek/edgetx-lint@v0.1.0
+- uses: betztek/edgetx-lint@v0.1.1
   with:
     radio: tx16s
     edgetx: v2.12.5
