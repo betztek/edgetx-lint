@@ -1,0 +1,3 @@
+tests/fixtures/pocket/broken/misplaced-key.yml:8: error [unknown-key] destCh: unknown key 'destCh': the radio silently ignores it
+    hint: 'destCh' is valid at 'mixData[].destCh' (wrong nesting?)
+1 file(s) checked (pocket, EdgeTX v2.11.8): 1 error(s), 0 warning(s), 0 info

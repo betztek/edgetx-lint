@@ -1,0 +1,2 @@
+tests/fixtures/tx16s/broken/literal-weight-from-2.12.yml:25: error [out-of-range] mixData[0].weight: -1024 is out of range for 'weight'; the radio stores 0 (and writes that back)
+1 file(s) checked (tx16s, EdgeTX v2.11.8): 1 error(s), 0 warning(s), 0 info

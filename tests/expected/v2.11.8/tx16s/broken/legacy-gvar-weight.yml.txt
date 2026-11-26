@@ -1,0 +1,5 @@
+tests/fixtures/tx16s/broken/legacy-gvar-weight.yml:25: error [version-trap] mixData[0].weight: 'weight: -1024' was written by EdgeTX 2.9.2, where it means GV1. EdgeTX 2.11.8 reads it as a plain number and stores 0 (out of range for the field); no conversion happens (semver is write-only)
+    hint: replace the number with 'GV1', or re-save the model with EdgeTX 2.10 Companion before upgrading
+tests/fixtures/tx16s/broken/legacy-gvar-weight.yml:41: error [version-trap] mixData[1].weight: 'weight: 1023' was written by EdgeTX 2.9.2, where it means -GV1. EdgeTX 2.11.8 reads it as a plain number and stores -1 (out of range for the field); no conversion happens (semver is write-only)
+    hint: replace the number with '-GV1', or re-save the model with EdgeTX 2.10 Companion before upgrading
+1 file(s) checked (tx16s, EdgeTX v2.11.8): 2 error(s), 0 warning(s), 0 info
