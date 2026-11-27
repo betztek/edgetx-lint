@@ -23,8 +23,11 @@ Read this and `CLAUDE.md` before starting work in a new session. Last updated
    (`mcp__github__actions_run_trigger`, `run_workflow`,
    `workflow_id: release.yml`, `ref: main`). It builds every backend, creates
    the tag, publishes the tarball and smoke-tests the published Action.
-3. **rc-config lint:** done in rc-config PR #13 (uses `@v0.1.1`). The owner
-   requires the single `ci-ok` check in rc-config's `main` ruleset.
+3. **rc-config lint:** done in rc-config PR #13 (uses `@v0.1.1`). rc-config
+   is private on a free plan, so GitHub won't enforce a ruleset there.
+   Instead, rc-config's `CLAUDE.md` → Git makes "`ci-ok` green on the
+   current head" a hard merge rule for sessions. Follow it; never merge a
+   red or pending rc-config PR.
 4. **Optional:** delete the stale tag `v0.1.0` and its release, or leave them.
    Its Action never worked; the tarball is fine. Owner only: sessions can't
    push or delete tags.
@@ -122,13 +125,13 @@ says to what the radio loads. A faithful port would keep the bugs below.
 | `lint` pocket | v2.10.0 | yes | what the Pocket runs |
 | `preview` tx16s, pocket | v2.12.5 | no (`continue-on-error`) | shows version traps before upgrading |
 | `docs` | — | yes | `build_docs.py tx16s` + `pocket`, then `git diff --exit-code docs/` |
-| `ci-ok` | — | — | `needs: [lint, docs]`, `if: always()`. **The only check rc-config's ruleset requires.** |
+| `ci-ok` | — | — | `needs: [lint, docs]`, `if: always()`. **The one check that gates merges** (by convention: rulesets aren't enforced on a private free-plan repo). |
 
 - **Files linted:** `<radio>/MODELS/*.yml <radio>/RADIO/radio.yml`.
 - **`--quiet`** hides info findings.
 - **Firmware upgrade:** change the `lint` leg's `edgetx` in the same PR that commits the upgraded files. Move or drop the `preview` leg.
 - **New radio:** add one line to the `lint` matrix (plus a backend in edgetx-lint if needed).
-- Neither change touches the ruleset, because it only requires `ci-ok`.
+- Neither change touches any merge rule, because only `ci-ok` matters.
 - `preview` is a separate job, not `continue-on-error` legs inside `lint`, so `ci-ok` never depends on how GitHub reports tolerated failures through `needs`.
 - **Keep in sync:** rc-config runs a copy of this file. Change both together.
 

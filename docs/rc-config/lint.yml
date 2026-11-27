@@ -9,10 +9,10 @@
 #   blocks; version traps show up as annotations before upgrading.
 # - `docs` fails if docs/ is stale (CLAUDE.md: rerun build_docs.py on model or
 #   notes changes and commit the result).
-# - `ci-ok` is the ONLY check the ruleset should require. It passes only if
-#   every `lint` leg and `docs` passed. Changing a version or adding a radio
-#   (one matrix line in `lint`, optionally in `preview`) needs no ruleset
-#   change.
+# - `ci-ok` is the one check that gates merges. It passes only if every `lint`
+#   leg and `docs` passed. Changing a version or adding a radio (one matrix
+#   line in `lint`, optionally in `preview`) changes nothing else. rc-config is
+#   private on a free plan, so GitHub doesn't enforce it; CLAUDE.md → Git does.
 #
 # Verified 2026-11-26 against main (46d2c51) with the edgetx-lint v0.1.1
 # release: every blocking and preview combination gives 0 errors and
@@ -82,7 +82,7 @@ jobs:
       - name: docs/ must match
         run: git diff --exit-code -- docs/
 
-  # Single stable check for the ruleset. `preview` is deliberately not in needs.
+  # Single stable merge gate. `preview` is deliberately not in needs.
   ci-ok:
     name: ci-ok
     if: always()
