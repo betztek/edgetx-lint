@@ -9,27 +9,25 @@ Read this and `CLAUDE.md` before starting work in a new session. Last updated
 |---|---|
 | `main` | PR #1 (engine, fixtures, CI, Action) and PR #3 (EdgeTX v2.10.7 + v2.11.8, release by dispatch) merged |
 | Release `v0.1.0` | Published: `edgetx-lint-linux-x64.tar.gz` + `.sha256`, 8 backends (tx16s, pocket × v2.10.6, v2.10.7, v2.11.8, v2.12.5). **Its Action is broken** (see PR #4). The tarball and `scripts/install.sh v0.1.0` work. |
-| PR #4 | Open. Fixes the `action.yml` parse error and the exit code under `bash -e`. Adds the CI `action` job and EdgeTX v2.10.0 (the Pocket's firmware). Bumps `VERSION` to 0.1.1. |
+| PR #4 | Merged: Action fixes, CI `action` job, EdgeTX v2.10.0, this handoff. |
 | Ruleset on `main` | Set by the owner: PR required + `ci-ok` check |
+| Release `v0.1.1` | Published 2026-11-26: 10 backends (tx16s, pocket × v2.10.0, v2.10.6, v2.10.7, v2.11.8, v2.12.5). Release run and Action smoke tests all green. |
 | CI | Matrix v2.10.0, v2.10.6, v2.10.7, v2.11.8, v2.12.5 (about 4 min); `action` job; `ci-ok` aggregates both |
-| rc-config CI | Not enabled. A ready workflow is in `docs/rc-config/lint.yml` (see below). |
+| rc-config CI | rc-config PR #13 enables it (see below). |
 
 ## Next steps, in order
 
-1. **Merge PR #4** once `ci-ok` is green (owner says "merge"). Merge commit, no
-   squash.
-2. **Release v0.1.1.** Run the Release workflow on `main` with input
-   `tag: v0.1.1` (`mcp__github__actions_run_trigger`, `run_workflow`,
-   `workflow_id: release.yml`, `ref: main`). It builds 10 backends, creates the
-   tag, publishes the tarball and smoke-tests the published Action. Then
-   check the run: every job green, especially `action-smoke-test`.
-3. **Enable lint in rc-config.** Copy `docs/rc-config/lint.yml` over
-   rc-config's `.github/workflows/lint.yml` in an rc-config PR. It needs
-   v0.1.1 to exist. edgetx-lint is public, so rc-config's default
-   `GITHUB_TOKEN` can download the release; no secret is needed. This
-   session only had rc-config read-only, so the owner or a session started
-   with rc-config push access does this. Afterwards, consider adding the
-   `edgetx (…)` blocking checks and `docs up to date` to rc-config's ruleset.
+1. ~~Merge PR #4~~ done.
+2. ~~Release v0.1.1~~ done. **To release later:** run the Release workflow on
+   `main` with input `tag: vX.Y.Z`, matching `VERSION`
+   (`mcp__github__actions_run_trigger`, `run_workflow`,
+   `workflow_id: release.yml`, `ref: main`). It builds every backend, creates
+   the tag, publishes the tarball and smoke-tests the published Action.
+3. **rc-config lint:** done in rc-config PR #13 (uses `@v0.1.1`). rc-config
+   is private on a free plan, so GitHub won't enforce a ruleset there.
+   Instead, rc-config's `CLAUDE.md` → Git makes "`ci-ok` green on the
+   current head" a hard merge rule for sessions. Follow it; never merge a
+   red or pending rc-config PR.
 4. **Optional:** delete the stale tag `v0.1.0` and its release, or leave them.
    Its Action never worked; the tarball is fine. Owner only: sessions can't
    push or delete tags.
@@ -119,31 +117,23 @@ says to what the radio loads. A faithful port would keep the bugs below.
   - Parity check and fixtures: a quarter day.
   - rc-config switch-over PR: a quarter day.
 
-## rc-config CI design (`docs/rc-config/lint.yml`)
+## rc-config CI (`docs/rc-config/lint.yml`, live in rc-config via PR #13)
 
-| Job | EdgeTX | Blocking | Why |
+| Job | EdgeTX | In `ci-ok` | Why |
 |---|---|---|---|
-| tx16s | v2.10.6 | yes | what the TX16S runs (`tx16s/edgetx.sdcard.version`: 2.10) |
-| pocket | v2.10.0 | yes | what the Pocket runs (`CLAUDE.md`: 2.10.0) |
-| tx16s upgrade preview | v2.12.5 | no (`continue-on-error`) | shows version traps before upgrading |
-| pocket upgrade preview | v2.12.5 | no | same |
-| docs up to date | — | yes | `build_docs.py tx16s` + `pocket`, then `git diff --exit-code docs/` |
+| `lint` tx16s | v2.10.6 | yes | what the TX16S runs |
+| `lint` pocket | v2.10.0 | yes | what the Pocket runs |
+| `preview` tx16s, pocket | v2.12.5 | no (`continue-on-error`) | shows version traps before upgrading |
+| `docs` | — | yes | `build_docs.py tx16s` + `pocket`, then `git diff --exit-code docs/` |
+| `ci-ok` | — | — | `needs: [lint, docs]`, `if: always()`. **The one check that gates merges** (by convention: rulesets aren't enforced on a private free-plan repo). |
 
-- Files linted: `<radio>/MODELS/*.yml <radio>/RADIO/radio.yml`.
-  `labels.yml` is skipped automatically (info).
-- `--quiet` hides info findings (legacy keys, normalised values) in the PR.
-- **After a firmware upgrade:** change the blocking job's `edgetx` value in
-  the same PR that commits the files pulled from the radio (rc-config rule:
-  "upgrade: EdgeTX X.Y.Z rewrite"). Then move the preview to the next release,
-  or drop it.
-- If the radio runs a version without a backend, add the tag to edgetx-lint's
-  CI + release matrices first (see "Adding an EdgeTX version").
-
-Verified 2026-11-26 against rc-config `main` (`ea98a86`, TX16S models
-12/13/14/16, Pocket `model00`). All four combinations give 0 errors and
-0 warnings; the docs regenerate with no diff.
-The earlier findings (model7 lowercase-hex parse abort; model8/9 version trap)
-are gone because those models were deleted.
+- **Files linted:** `<radio>/MODELS/*.yml <radio>/RADIO/radio.yml`.
+- **`--quiet`** hides info findings.
+- **Firmware upgrade:** change the `lint` leg's `edgetx` in the same PR that commits the upgraded files. Move or drop the `preview` leg.
+- **New radio:** add one line to the `lint` matrix (plus a backend in edgetx-lint if needed).
+- Neither change touches any merge rule, because only `ci-ok` matters.
+- `preview` is a separate job, not `continue-on-error` legs inside `lint`, so `ci-ok` never depends on how GitHub reports tolerated failures through `needs`.
+- **Keep in sync:** rc-config runs a copy of this file. Change both together.
 
 ## Adding an EdgeTX version
 
