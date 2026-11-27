@@ -48,6 +48,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" LINT_VERSION LIMIT_COUNT 1)
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION")
 
 # ---------------------------------------------------------------- frontend
 add_executable(edgetx-lint src/frontend/main.cpp)
@@ -90,6 +91,7 @@ set(BACKEND_NAME "edgetx-lint-${LINT_RADIO}-${EDGETX_TAG}")
 add_executable(edgetx-lint-backend
   src/backend/main.cpp
   src/backend/linter.cpp
+  src/backend/describe.cpp
   src/backend/schema.cpp
   src/backend/report.cpp
   src/backend/simu_stubs.cpp

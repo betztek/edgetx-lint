@@ -1,7 +1,7 @@
 # Handoff: state and next steps
 
 Read this and `CLAUDE.md` before starting work in a new session. Last updated
-2026-11-26.
+2026-11-27.
 
 ## State
 
@@ -13,7 +13,8 @@ Read this and `CLAUDE.md` before starting work in a new session. Last updated
 | Ruleset on `main` | Set by the owner: PR required + `ci-ok` check |
 | Release `v0.1.1` | Published 2026-11-26: 10 backends (tx16s, pocket × v2.10.0, v2.10.6, v2.10.7, v2.11.8, v2.12.5). Release run and Action smoke tests all green. |
 | CI | Matrix v2.10.0, v2.10.6, v2.10.7, v2.11.8, v2.12.5 (about 4 min); `action` job; `ci-ok` aggregates both |
-| rc-config CI | rc-config PR #13 enables it (see below). |
+| rc-config CI | rc-config PR #13 enables it (see below). Merged. |
+| `describe` | Implemented on branch `ccr-65be9c81-q08dua` (VERSION 0.2.0): `src/backend/describe.cpp`, schema `docs/DESCRIBE.md`, fixtures `tests/fixtures/*/describe/`, parity in `docs/ACCEPTANCE.md`. Not released yet. |
 
 ## Next steps, in order
 
@@ -31,8 +32,18 @@ Read this and `CLAUDE.md` before starting work in a new session. Last updated
 4. **Optional:** delete the stale tag `v0.1.0` and its release, or leave them.
    Its Action never worked; the tarball is fine. Owner only: sessions can't
    push or delete tags.
-5. **`describe` subcommand.** See "describe: why and design" below. Start
-   after step 3, so rc-config lint is already guarding model edits.
+5. ~~**`describe` subcommand.**~~ Implemented (acceptance 1 and 2 done; see
+   below and `docs/ACCEPTANCE.md`). Remaining:
+   1. Merge the describe PR, then release **v0.2.0** (step 2's recipe).
+   2. **rc-config switch-over PR** (acceptance 3, owner approval needed):
+      `build_docs.py` runs `edgetx-lint describe --radio R --edgetx <pinned>
+      --multi scripts/Multi.txt R/RADIO/radio.yml R/MODELS/model*.yml` (CI:
+      `scripts/install.sh v0.2.0`) and renders from schema 1. Expected docs
+      diff, from the parity run: every mixed channel now appears under
+      Outputs (describe.py dropped those with default limits), special
+      function parameters in the radio's canonical form, `text` names from
+      EdgeTX (e.g. `SA↑`, `L01`). Pin the same EdgeTX version as the lint
+      job. Delete describe.py one release later.
 
 ## describe: why and design
 
@@ -87,6 +98,21 @@ says to what the radio loads. A faithful port would keep the bugs below.
 - **Multi-protocol names.** describe.py resolves `subType "P,S"` through the
   SD card's `Multi.txt`. Keep that file as an optional input (`--multi FILE`),
   because the protocol list lives on the SD card, not in EdgeTX.
+
+### Decisions taken when implementing (2026-11-27)
+
+- **Lint gate:** describe always prints the facts of the loaded state (ignored
+  values can't appear in it) with each file's findings embedded, and exits 1
+  if any input has a lint error. No per-value `"loaded": false`: a value the
+  radio ignored is simply absent, which is what the radio holds.
+- **raw tokens** come from the schema's own writer callbacks for the field,
+  so they match `roundtrip` output exactly and need no per-version decoding.
+- **Display names:** `getSourceString`, `getSwitchPositionName`,
+  `getCurveString`, `getSwitchName`, `getPotLabel`, `analogGetCanonicalName`
+  all work from the backend on 2.10.0–2.12.5. Their font glyphs
+  (`\302\2xx`) are mapped to Unicode arrows or dropped.
+- **Outputs** list mixed channels and channels with non-default limits; a
+  name alone doesn't count.
 
 ### Acceptance
 

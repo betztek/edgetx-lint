@@ -13,11 +13,13 @@
 #include "findings.h"
 #include "linter.h"
 #include "report.h"
+#include "describe.h"
 
 static const char* kUsage =
     "usage: %s check [--radio R] [--edgetx TAG] [--format text|json|github]\n"
     "                [--warn-unknown] [--strict] [--quiet] [--type model|radio]\n"
     "                [--no-roundtrip] FILE...\n"
+    "       %s describe [--multi Multi.txt] [--strict] [--compact] [RADIO/radio.yml] MODEL...\n"
     "       %s dump-default model|radio\n"
     "       %s roundtrip [--type model|radio] FILE\n"
     "       %s info\n";
@@ -55,7 +57,7 @@ int main(int argc, char** argv)
   if (!out) return 2;
   const char* self = argv[0];
   auto usage = [&]() {
-    fprintf(stderr, kUsage, self, self, self, self);
+    fprintf(stderr, kUsage, self, self, self, self, self);
     return 2;
   };
   if (argc < 2) return usage();
@@ -64,6 +66,7 @@ int main(int argc, char** argv)
   Options opt;
   std::string radio, tag;
   std::vector<std::string> files;
+  DescribeOptions dopt;
 
   for (int i = 2; i < argc; ++i) {
     std::string a = argv[i];
@@ -80,6 +83,8 @@ int main(int argc, char** argv)
     else if (a == "--strict") opt.strict = true;
     else if (a == "--quiet" || a == "-q") opt.quiet = true;
     else if (a == "--no-roundtrip") opt.noRoundtrip = true;
+    else if (a == "--multi" && cmd == "describe") { if (!need(dopt.multiFile)) return usage(); }
+    else if (a == "--compact" && cmd == "describe") dopt.pretty = false;
     else if (a == "--") { for (++i; i < argc; ++i) files.push_back(argv[i]); }
     else if (a.size() > 1 && a[0] == '-') {
       fprintf(stderr, "edgetx-lint: unknown option '%s'\n", a.c_str());
@@ -128,6 +133,16 @@ int main(int argc, char** argv)
     std::string text;
     int rc = roundtripDump(files[0], opt.forceType, text);
     fwrite(text.data(), 1, text.size(), out);
+    fflush(out);
+    return rc;
+  }
+  if (cmd == "describe") {
+    if (files.empty()) {
+      fprintf(stderr, "edgetx-lint: no files given\n");
+      return 2;
+    }
+    dopt.strict = opt.strict;
+    int rc = describeFiles(out, files, dopt);
     fflush(out);
     return rc;
   }
