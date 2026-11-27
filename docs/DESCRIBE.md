@@ -72,7 +72,7 @@ the meaning of a key bumps it.
 | `SWITCH` | `raw`, `text`, `kind` (`none` `switch` `multipos` `trim` `logical` `on` `one` `flight_mode` `telemetry` `other`), `negated` (only if true). `switch`: `switch` (name), `position` (`up` `middle` `down`). `logical`/`flight_mode`: `index` (L: 1-based, FM: 0-based). `multipos`: `position` (1-based). |
 | `SOURCE` | `raw`, `text`, `kind` (`none` `input` `lua` `stick` `pot` `constant` `heli` `trim` `switch` `logical` `trainer` `channel` `gvar` `timer` `telemetry` `other`), `negated`, `index` (1-based, for `input` `channel` `gvar` `logical`). |
 | `VALUE` | A number that may hold a GVar or (2.11+) a source. `raw`, `text`; then either `value` (number, unit applied) or `gvar` (1-based) + `negated`, or (2.11+) `source` (`SOURCE`). |
-| `FMMASK` | `mask` (bit i set = off in FM i), `active_in` (list of FM numbers), `text` (`all`, `none`, `FM0,2`). |
+| `FMMASK` | `mask` (bit i set = off in FM i), `active_in` (list of FM numbers), `text` (`all`, `none`, `FM0,FM2`). |
 | `CURVE` | `type` (`diff` `expo` `func` `custom`), `value` (`VALUE` for diff/expo, number otherwise), `text` (`""` when diff/expo 0). |
 | `LINT` | `errors`, `warnings`, `infos`, `findings`: list of `severity`, `rule`, `line`, `path`, `message`, `hint`? (same as `check --format json`). |
 

@@ -1,0 +1,658 @@
+{
+  "schema": 1,
+  "tool": {
+    "name": "edgetx-lint",
+    "version": "VERSION",
+    "radio": "pocket",
+    "edgetx": "v2.11.8"
+  },
+  "radio": {
+    "file": "tests/fixtures/pocket/valid/RADIO/radio.yml",
+    "kind": "radio",
+    "semver": "2.10.6",
+    "loaded": true,
+    "lint": {
+      "errors": 0,
+      "warnings": 0,
+      "infos": 0,
+      "findings": []
+    },
+    "stick_mode": 1,
+    "switches": [
+      {
+        "name": "SA",
+        "type": "2pos"
+      },
+      {
+        "name": "SB",
+        "type": "3pos"
+      },
+      {
+        "name": "SC",
+        "type": "3pos"
+      },
+      {
+        "name": "SD",
+        "type": "2pos"
+      },
+      {
+        "name": "SE",
+        "type": "toggle"
+      }
+    ],
+    "pots": [
+      {
+        "index": 1,
+        "name": "P1",
+        "label": "S1"
+      }
+    ]
+  },
+  "models": [
+    {
+      "file": "tests/fixtures/pocket/valid/model-default.yml",
+      "kind": "model",
+      "semver": "2.10.6",
+      "loaded": true,
+      "lint": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 0,
+        "findings": []
+      },
+      "name": "MODEL01",
+      "modules": [
+        {
+          "index": 0,
+          "slot": "internal",
+          "type": "TYPE_NONE",
+          "enabled": false
+        },
+        {
+          "index": 1,
+          "slot": "external",
+          "type": "TYPE_NONE",
+          "enabled": false
+        }
+      ],
+      "trainer_mode": "OFF",
+      "timers": [],
+      "flight_modes": [
+        {
+          "index": 0,
+          "name": "",
+          "switch": {
+            "raw": "",
+            "kind": "none",
+            "text": ""
+          },
+          "fade_in_s": 0,
+          "fade_out_s": 0
+        }
+      ],
+      "inputs": [
+        {
+          "line": 1,
+          "input": 1,
+          "input_name": "Rud",
+          "name": "",
+          "source": {
+            "raw": "Rud",
+            "kind": "stick",
+            "text": "Rud"
+          },
+          "weight": {
+            "raw": "100",
+            "value": 100,
+            "text": "100%"
+          },
+          "offset": {
+            "raw": "0",
+            "value": 0,
+            "text": "0%"
+          },
+          "curve": {
+            "type": "expo",
+            "value": {
+              "raw": "0",
+              "value": 0,
+              "text": "0%"
+            },
+            "text": ""
+          },
+          "switch": {
+            "raw": "NONE",
+            "kind": "none",
+            "text": ""
+          },
+          "flight_modes": {
+            "mask": 0,
+            "active_in": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8
+            ],
+            "text": "all"
+          },
+          "side": "both"
+        },
+        {
+          "line": 2,
+          "input": 2,
+          "input_name": "Ele",
+          "name": "",
+          "source": {
+            "raw": "Ele",
+            "kind": "stick",
+            "text": "Ele"
+          },
+          "weight": {
+            "raw": "100",
+            "value": 100,
+            "text": "100%"
+          },
+          "offset": {
+            "raw": "0",
+            "value": 0,
+            "text": "0%"
+          },
+          "curve": {
+            "type": "expo",
+            "value": {
+              "raw": "0",
+              "value": 0,
+              "text": "0%"
+            },
+            "text": ""
+          },
+          "switch": {
+            "raw": "NONE",
+            "kind": "none",
+            "text": ""
+          },
+          "flight_modes": {
+            "mask": 0,
+            "active_in": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8
+            ],
+            "text": "all"
+          },
+          "side": "both"
+        },
+        {
+          "line": 3,
+          "input": 3,
+          "input_name": "Thr",
+          "name": "",
+          "source": {
+            "raw": "Thr",
+            "kind": "stick",
+            "text": "Thr"
+          },
+          "weight": {
+            "raw": "100",
+            "value": 100,
+            "text": "100%"
+          },
+          "offset": {
+            "raw": "0",
+            "value": 0,
+            "text": "0%"
+          },
+          "curve": {
+            "type": "expo",
+            "value": {
+              "raw": "0",
+              "value": 0,
+              "text": "0%"
+            },
+            "text": ""
+          },
+          "switch": {
+            "raw": "NONE",
+            "kind": "none",
+            "text": ""
+          },
+          "flight_modes": {
+            "mask": 0,
+            "active_in": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8
+            ],
+            "text": "all"
+          },
+          "side": "both"
+        },
+        {
+          "line": 4,
+          "input": 4,
+          "input_name": "Ail",
+          "name": "",
+          "source": {
+            "raw": "Ail",
+            "kind": "stick",
+            "text": "Ail"
+          },
+          "weight": {
+            "raw": "100",
+            "value": 100,
+            "text": "100%"
+          },
+          "offset": {
+            "raw": "0",
+            "value": 0,
+            "text": "0%"
+          },
+          "curve": {
+            "type": "expo",
+            "value": {
+              "raw": "0",
+              "value": 0,
+              "text": "0%"
+            },
+            "text": ""
+          },
+          "switch": {
+            "raw": "NONE",
+            "kind": "none",
+            "text": ""
+          },
+          "flight_modes": {
+            "mask": 0,
+            "active_in": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8
+            ],
+            "text": "all"
+          },
+          "side": "both"
+        }
+      ],
+      "mixes": [
+        {
+          "line": 1,
+          "channel": 1,
+          "channel_name": "",
+          "name": "",
+          "source": {
+            "raw": "I0",
+            "kind": "input",
+            "text": "Rud",
+            "index": 1
+          },
+          "weight": {
+            "raw": "100",
+            "value": 100,
+            "text": "100%"
+          },
+          "offset": {
+            "raw": "0",
+            "value": 0,
+            "text": "0%"
+          },
+          "curve": {
+            "type": "diff",
+            "value": {
+              "raw": "0",
+              "value": 0,
+              "text": "0%"
+            },
+            "text": ""
+          },
+          "op": "ADD",
+          "switch": {
+            "raw": "NONE",
+            "kind": "none",
+            "text": ""
+          },
+          "flight_modes": {
+            "mask": 0,
+            "active_in": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8
+            ],
+            "text": "all"
+          },
+          "include_trim": true,
+          "slow_up_s": 0,
+          "slow_down_s": 0,
+          "delay_up_s": 0,
+          "delay_down_s": 0,
+          "warning": 0
+        },
+        {
+          "line": 2,
+          "channel": 2,
+          "channel_name": "",
+          "name": "",
+          "source": {
+            "raw": "I1",
+            "kind": "input",
+            "text": "Ele",
+            "index": 2
+          },
+          "weight": {
+            "raw": "100",
+            "value": 100,
+            "text": "100%"
+          },
+          "offset": {
+            "raw": "0",
+            "value": 0,
+            "text": "0%"
+          },
+          "curve": {
+            "type": "diff",
+            "value": {
+              "raw": "0",
+              "value": 0,
+              "text": "0%"
+            },
+            "text": ""
+          },
+          "op": "ADD",
+          "switch": {
+            "raw": "NONE",
+            "kind": "none",
+            "text": ""
+          },
+          "flight_modes": {
+            "mask": 0,
+            "active_in": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8
+            ],
+            "text": "all"
+          },
+          "include_trim": true,
+          "slow_up_s": 0,
+          "slow_down_s": 0,
+          "delay_up_s": 0,
+          "delay_down_s": 0,
+          "warning": 0
+        },
+        {
+          "line": 3,
+          "channel": 3,
+          "channel_name": "",
+          "name": "",
+          "source": {
+            "raw": "I2",
+            "kind": "input",
+            "text": "Thr",
+            "index": 3
+          },
+          "weight": {
+            "raw": "100",
+            "value": 100,
+            "text": "100%"
+          },
+          "offset": {
+            "raw": "0",
+            "value": 0,
+            "text": "0%"
+          },
+          "curve": {
+            "type": "diff",
+            "value": {
+              "raw": "0",
+              "value": 0,
+              "text": "0%"
+            },
+            "text": ""
+          },
+          "op": "ADD",
+          "switch": {
+            "raw": "NONE",
+            "kind": "none",
+            "text": ""
+          },
+          "flight_modes": {
+            "mask": 0,
+            "active_in": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8
+            ],
+            "text": "all"
+          },
+          "include_trim": true,
+          "slow_up_s": 0,
+          "slow_down_s": 0,
+          "delay_up_s": 0,
+          "delay_down_s": 0,
+          "warning": 0
+        },
+        {
+          "line": 4,
+          "channel": 4,
+          "channel_name": "",
+          "name": "",
+          "source": {
+            "raw": "I3",
+            "kind": "input",
+            "text": "Ail",
+            "index": 4
+          },
+          "weight": {
+            "raw": "100",
+            "value": 100,
+            "text": "100%"
+          },
+          "offset": {
+            "raw": "0",
+            "value": 0,
+            "text": "0%"
+          },
+          "curve": {
+            "type": "diff",
+            "value": {
+              "raw": "0",
+              "value": 0,
+              "text": "0%"
+            },
+            "text": ""
+          },
+          "op": "ADD",
+          "switch": {
+            "raw": "NONE",
+            "kind": "none",
+            "text": ""
+          },
+          "flight_modes": {
+            "mask": 0,
+            "active_in": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8
+            ],
+            "text": "all"
+          },
+          "include_trim": true,
+          "slow_up_s": 0,
+          "slow_down_s": 0,
+          "delay_up_s": 0,
+          "delay_down_s": 0,
+          "warning": 0
+        }
+      ],
+      "outputs": [
+        {
+          "channel": 1,
+          "name": "",
+          "min": {
+            "raw": "0",
+            "value": -100,
+            "text": "-100%"
+          },
+          "max": {
+            "raw": "0",
+            "value": 100,
+            "text": "100%"
+          },
+          "subtrim": {
+            "raw": "0",
+            "value": 0,
+            "text": "0%"
+          },
+          "ppm_center_us": 1500,
+          "symmetrical": false,
+          "reversed": false,
+          "curve": {
+            "value": 0,
+            "text": ""
+          },
+          "mixed": true
+        },
+        {
+          "channel": 2,
+          "name": "",
+          "min": {
+            "raw": "0",
+            "value": -100,
+            "text": "-100%"
+          },
+          "max": {
+            "raw": "0",
+            "value": 100,
+            "text": "100%"
+          },
+          "subtrim": {
+            "raw": "0",
+            "value": 0,
+            "text": "0%"
+          },
+          "ppm_center_us": 1500,
+          "symmetrical": false,
+          "reversed": false,
+          "curve": {
+            "value": 0,
+            "text": ""
+          },
+          "mixed": true
+        },
+        {
+          "channel": 3,
+          "name": "",
+          "min": {
+            "raw": "0",
+            "value": -100,
+            "text": "-100%"
+          },
+          "max": {
+            "raw": "0",
+            "value": 100,
+            "text": "100%"
+          },
+          "subtrim": {
+            "raw": "0",
+            "value": 0,
+            "text": "0%"
+          },
+          "ppm_center_us": 1500,
+          "symmetrical": false,
+          "reversed": false,
+          "curve": {
+            "value": 0,
+            "text": ""
+          },
+          "mixed": true
+        },
+        {
+          "channel": 4,
+          "name": "",
+          "min": {
+            "raw": "0",
+            "value": -100,
+            "text": "-100%"
+          },
+          "max": {
+            "raw": "0",
+            "value": 100,
+            "text": "100%"
+          },
+          "subtrim": {
+            "raw": "0",
+            "value": 0,
+            "text": "0%"
+          },
+          "ppm_center_us": 1500,
+          "symmetrical": false,
+          "reversed": false,
+          "curve": {
+            "value": 0,
+            "text": ""
+          },
+          "mixed": true
+        }
+      ],
+      "logical_switches": [],
+      "special_functions": [],
+      "global_variables": [],
+      "throttle_warning_disabled": false,
+      "switch_warning": "",
+      "rssi_alarms": {
+        "disabled": false,
+        "warning": 45,
+        "critical": 42
+      },
+      "telemetry_sensors": [],
+      "extended_limits": false,
+      "helicopter": false
+    }
+  ]
+}

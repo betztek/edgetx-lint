@@ -490,11 +490,11 @@ J fmMask(uint32_t mask)
   for (int i = 0; i < MAX_FLIGHT_MODES; ++i)
     if (!(mask & (1u << i))) {
       on.push(J::num(i));
-      txt += (n++ ? "," : "") + std::to_string(i);
+      txt += std::string(n++ ? ",FM" : "FM") + std::to_string(i);
     }
   j.set("mask", (long)mask);
   j.set("active_in", on);
-  j.set("text", mask == 0 ? std::string("all") : n == 0 ? std::string("none") : "FM" + txt);
+  j.set("text", mask == 0 ? std::string("all") : n == 0 ? std::string("none") : txt);
   return j;
 }
 
