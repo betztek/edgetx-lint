@@ -59,6 +59,11 @@ ignore or misread.
 - EdgeTX TRACEs go to stdout, even from static constructors: the backend
   redirects fd 1 in a `constructor(101)` and prints only to the saved fd.
   `EDGETX_LINT_TRACE=1` shows EdgeTX's traces on stderr.
+- `src/backend/describe.cpp`: `describe` subcommand, facts JSON (schema in
+  `docs/DESCRIBE.md`) read from the loaded `g_model`/`g_eeGeneral` after
+  `lintFile()`. `raw` tokens come from the schema's own writer callbacks
+  (`tok()`), `text` from EdgeTX's `strhelpers` (icon glyphs mapped by
+  `uiText()`). Exit 1 if any input has lint errors; facts still printed.
 - Version differences are handled in code with `ETX_VERSION_NUM` (from
   EdgeTX's `stamp.h`), `__has_include`, and SFINAE (`enumHasActive`), never by
   touching EdgeTX.
@@ -92,6 +97,7 @@ compiling it can leave a stale object; `touch` and rebuild.
 edgetx-lint check --radio tx16s --edgetx v2.12.5 MODELS/*.yml RADIO/radio.yml
 edgetx-lint check --radio pocket --format json model01.yml
 edgetx-lint check --radio tx16s --format github --warn-unknown ...
+edgetx-lint describe --radio tx16s --edgetx v2.10.6 --multi Multi.txt RADIO/radio.yml MODELS/*.yml
 edgetx-lint list
 <backend> dump-default model|radio     # EdgeTX's own defaults (fixture source)
 <backend> roundtrip FILE               # what the radio writes back after loading
@@ -99,8 +105,6 @@ edgetx-lint list
 
 ## Out of scope (later)
 
-`describe` subcommand (planned, see `docs/HANDOFF.md` "describe: why and
-design"; not a straight port of rc-config's describe.py), mixer
-behaviour tests (EdgeTX PR #7220 scenarios), simulator screenshots (upstream
-PR #7668), macOS/Windows builds, Companion codec cross-check (tier 1b, see
+Mixer behaviour tests (EdgeTX PR #7220 scenarios), simulator screenshots
+(upstream PR #7668), macOS/Windows builds, Companion codec cross-check (tier 1b, see
 README).

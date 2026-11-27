@@ -25,8 +25,13 @@ release and runs your files through it.
 ```sh
 edgetx-lint check --radio tx16s --edgetx v2.12.5 MODELS/*.yml RADIO/radio.yml
 edgetx-lint check --radio pocket --format json MODELS/model01.yml
+edgetx-lint describe --radio tx16s --edgetx v2.10.6 --multi Multi.txt RADIO/radio.yml MODELS/*.yml
 edgetx-lint list        # installed radio / EdgeTX backends
 ```
+
+`describe` prints facts JSON about what the radio loads (inputs, mixes,
+outputs, switches, modules, ... with the radio's own names), for
+documentation generators. Schema and lint-gate rules: `docs/DESCRIBE.md`.
 
 | option | |
 |---|---|
@@ -128,7 +133,7 @@ The action downloads the matching release asset and annotates the PR.
   write with Companion, then diff both through the radio parser with the
   existing tier-2 matcher.
 - `postModelLoad()` fix-ups are not simulated.
-- `describe` subcommand, mixer behaviour tests, simulator screenshots,
+- Mixer behaviour tests, simulator screenshots,
   macOS/Windows builds.
 
 ## License

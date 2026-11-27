@@ -92,6 +92,8 @@ static void usage(FILE* f)
           "edgetx-lint %s - validate EdgeTX model/radio YAML with EdgeTX's own parser\n"
           "\n"
           "usage: edgetx-lint check --radio RADIO [--edgetx TAG] [options] FILE...\n"
+          "       edgetx-lint describe --radio RADIO [--edgetx TAG] [--multi Multi.txt]\n"
+          "                            [RADIO/radio.yml] MODEL...   facts JSON (what the radio loads)\n"
           "       edgetx-lint list            show installed radio/EdgeTX backends\n"
           "       edgetx-lint --version\n"
           "\n"
@@ -132,7 +134,7 @@ int main(int argc, char** argv)
     for (auto& b : backends) printf("%-8s %-10s %s\n", b.radio.c_str(), b.tag.c_str(), b.path.c_str());
     return 0;
   }
-  if (cmd != "check" && cmd != "dump-default" && cmd != "roundtrip") {
+  if (cmd != "check" && cmd != "describe" && cmd != "dump-default" && cmd != "roundtrip") {
     fprintf(stderr, "edgetx-lint: unknown command '%s'\n\n", cmd.c_str());
     usage(stderr);
     return 2;
